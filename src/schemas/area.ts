@@ -29,8 +29,8 @@ export class Area extends Document {
   createdAt: number
 
   @ApiProperty()
-  @Prop()
-  updatedAt: number | null
+  @Prop({ default: null })
+  updatedAt: number
 }
 
 export const AreaSchema = SchemaFactory.createForClass(Area)
@@ -40,7 +40,6 @@ RequestLogSchema.pre<RequestLog>(/(save|update)/i, function (next) {
 
   if (document.isNew) {
     document.set({ createdAt: moment().valueOf() })
-    document.set({ updatedAt: null })
   } else {
     document.set({ updatedAt: moment().valueOf() })
   }

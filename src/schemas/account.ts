@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ApiProperty } from '@nestjs/swagger'
 import * as bcrypt from 'bcryptjs'
-import moment from 'moment'
 import { Document, LeanDocument } from 'mongoose'
+import moment from 'moment'
 
 export const ACCOUNT_COLLECTION = 'accounts'
 
@@ -70,17 +70,17 @@ export class Account extends Document {
   @ApiProperty()
   isVerified: boolean
 
-  @Prop({ default: moment(new Date()).valueOf() })
+  @Prop()
   @ApiProperty({
     description: 'Created at (time millis)'
   })
   createdAt: number
 
-  @Prop()
+  @Prop({ default: null })
   @ApiProperty({
     description: 'Updated at (time millis)'
   })
-  updatedAt: number | null
+  updatedAt: number
 }
 
 export const AccountSchema = SchemaFactory.createForClass(Account)
@@ -89,7 +89,7 @@ AccountSchema.pre<Account>(/(save|update)/i, function (next) {
   const document = this
 
   if (document.isNew) {
-    document.updatedAt = null
+    document.set({ created: moment().valueOf() })
   } else {
     document.set({ updatedAt: moment().valueOf() })
   }
