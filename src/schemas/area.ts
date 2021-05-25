@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Types } from 'mongoose'
 import { ApiProperty } from '@nestjs/swagger'
 import moment from 'moment'
+import { Exclude } from 'class-transformer'
 import { RequestLog, RequestLogSchema } from './requestLog'
 
 export const AreaCollection = 'areas'
@@ -20,6 +21,7 @@ export class Area extends Document {
   @Prop({ default: '' })
   image: string
 
+  @Exclude()
   @ApiProperty({ type: String })
   @Prop({ required: true })
   ownerId: Types.ObjectId
@@ -31,6 +33,10 @@ export class Area extends Document {
   @ApiProperty()
   @Prop({ default: null })
   updatedAt: number
+
+  constructor(area: Area, partial: Partial<Area>) {
+    super(Object.assign(area, partial))
+  }
 }
 
 export const AreaSchema = SchemaFactory.createForClass(Area)

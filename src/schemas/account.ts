@@ -27,7 +27,7 @@ export class Account extends Document {
   @ApiProperty({ description: 'Facebook ID' })
   facebookId: string
 
-  @Prop({ unique: true })
+  @Prop({ required: true, unique: true })
   @ApiProperty({ description: 'Email' })
   email: string
 
@@ -46,39 +46,46 @@ export class Account extends Document {
   @ApiProperty({ description: 'Last name' })
   lastName: string
 
-  @Prop()
+  @Prop({ default: null })
   @ApiProperty({ description: 'Avatar', default: null })
   avatar: string
 
   @Prop({ default: null })
   @ApiProperty({
-    description: 'Birthday (YYYY-MM-DD)'
+    description: 'Birthday (YYYY-MM-DD)',
+    default: null
   })
   birthday: string
 
   @Prop({ default: null })
-  @ApiProperty({ description: 'Gender (1: Male, 2: Female, 3: Other)' })
+  @ApiProperty({
+    description: 'Gender (1: Male, 2: Female, 3: Other)',
+    default: null
+  })
   gender: number
 
   @Prop({ default: ACCOUNT_STATUS.ACTIVATED })
   @ApiProperty({
-    description: 'Status (0: Disabled, 1: Activated)'
+    description: 'Status (0: Disabled, 1: Activated)',
+    default: ACCOUNT_STATUS.ACTIVATED
   })
   status: number
 
   @Prop({ default: false })
-  @ApiProperty()
+  @ApiProperty({ default: false })
   isVerified: boolean
 
   @Prop()
   @ApiProperty({
-    description: 'Created at (time millis)'
+    description: 'Created at (time millis)',
+    default: moment().valueOf()
   })
   createdAt: number
 
   @Prop({ default: null })
   @ApiProperty({
-    description: 'Updated at (time millis)'
+    description: 'Updated at (time millis)',
+    default: null
   })
   updatedAt: number
 }

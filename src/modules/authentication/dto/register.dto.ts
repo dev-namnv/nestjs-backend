@@ -11,20 +11,20 @@ export class RegisterDto {
   lastName: string
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'Email cannot be empty' })
   @IsEmail(
     {},
     {
       message: 'Email is invalid'
     }
   )
+  @IsNotEmpty({ message: 'Email cannot be empty' })
   email: string
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'Password cannot be empty' })
-  @MinLength(6, { message: 'Password must be greater than 6 characters' })
   @Matches(/^[^\s\r\n\t]+$/, {
     message: 'Password contains invalid characters"'
   })
+  @MinLength(6, { message: 'Password must be greater than 6 characters' })
+  @IsNotEmpty({ message: 'Password cannot be empty' })
   password: string
 }

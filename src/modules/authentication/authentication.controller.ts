@@ -75,7 +75,7 @@ export class AuthenticationController {
   @ApiBearerAuth('JWT')
   @ApiTags('Auth')
   @Get('/profile')
-  getProfile(@Req() req: Request): any {
+  async getProfile(@Req() req: Request): Promise<Account | null> {
     return req.user as Account
   }
 
