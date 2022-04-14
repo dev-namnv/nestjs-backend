@@ -46,6 +46,7 @@ module.exports = {
     '@typescript-eslint/ban-ts-ignore': 0,
     'no-restricted-syntax': 0,
     'no-param-reassign': 0,
-    'max-classes-per-file': 0
+    'max-classes-per-file': 0,
+    '@typescript-eslint/class-name-casing': 0
   },
 };

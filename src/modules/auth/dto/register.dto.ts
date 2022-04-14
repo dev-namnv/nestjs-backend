@@ -3,21 +3,16 @@ import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator'
 
 export class RegisterDto {
   @ApiProperty()
-  @IsNotEmpty({ message: 'First name cannot be empty' })
-  firstName: string
+  @IsNotEmpty()
+  username: string
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'Last name cannot be empty' })
-  lastName: string
+  @IsNotEmpty()
+  phoneNumber: string
 
   @ApiProperty()
-  @IsEmail(
-    {},
-    {
-      message: 'Email is invalid'
-    }
-  )
-  @IsNotEmpty({ message: 'Email cannot be empty' })
+  @IsEmail()
+  @IsNotEmpty()
   email: string
 
   @ApiProperty()
@@ -27,4 +22,8 @@ export class RegisterDto {
   @MinLength(6, { message: 'Password must be greater than 6 characters' })
   @IsNotEmpty({ message: 'Password cannot be empty' })
   password: string
+
+  @ApiProperty()
+  @IsNotEmpty()
+  passwordConfirm: string
 }

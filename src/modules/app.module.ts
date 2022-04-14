@@ -2,35 +2,47 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import * as path from 'path'
-import { MongooseModule } from '@nestjs/mongoose'
 import { I18nModule, I18nJsonParser } from 'nestjs-i18n'
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { Connection } from 'typeorm'
 import { HttpErrorFilter } from '../shared/httpError.filter'
 import { TransformInterceptor } from '../shared/transform.interceptor'
 import { AppController } from './app.controller'
-import { RequestLogModule } from './requestLog/requestLog.module'
 import { AppService } from './app.service'
-import { AuthenticationModule } from './authentication/authentication.module'
-import { AreaModule } from './area/area.module'
+import { AuthModule } from './auth/auth.module'
+import { User } from '../schemas/user'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('MONGODB_URI', ''),
-        useFindAndModify: false,
-        useCreateIndex: true
-      })
+      useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
+        return {
+          type: configService.get('DB_TYPE') as 'mysql',
+          host: configService.get('DB_HOST'),
+          port: configService.get('DB_PORT'),
+          username: configService.get('DB_USERNAME'), // @ts-ignore
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_DATABASE'),
+          extra: {
+            connectionLimit: configService.get('DB_CONNECTION_LIMIT')
+          },
+          cache: false,
+          dateStrings: false,
+          logging: 'all',
+          entities: [User]
+        }
+      }
     }),
     I18nModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        fallbackLanguage: configService.get('APP_LOCALE', 'vi'),
+        fallbackLanguage: configService.get('APP_LOCALE', 'en'),
         parserOptions: {
           path: path.join(__dirname, '../i18n/')
         },
@@ -38,9 +50,7 @@ import { AreaModule } from './area/area.module'
       }),
       parser: I18nJsonParser
     }),
-    RequestLogModule,
-    AuthenticationModule,
-    AreaModule
+    AuthModule
   ],
   providers: [
     {
@@ -55,4 +65,7 @@ import { AreaModule } from './area/area.module'
   ],
   controllers: [AppController]
 })
-export class AppModule {}
+export class AppModule {
+  // @ts-ignore
+  constructor(private connection: Connection) {}
+}

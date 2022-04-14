@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
-import { MongooseModule } from '@nestjs/mongoose'
 import { PassportModule } from '@nestjs/passport'
-import { Account, AccountSchema } from '../../schemas/account'
-import { AuthenticationController } from './authentication.controller'
-import { AuthenticationService } from './authentication.service'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from '../../schemas/user'
+import { AuthController } from './auth.controller'
+import { AuthService } from './auth.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
-import { AreaModule } from '../area/area.module'
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Account.name, schema: AccountSchema }]),
+    TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -22,11 +21,10 @@ import { AreaModule } from '../area/area.module'
           expiresIn: `${configService.get('JWT_EXPIRES')}s`
         }
       })
-    }),
-    AreaModule
+    })
   ],
-  controllers: [AuthenticationController],
-  providers: [AuthenticationService, JwtStrategy],
-  exports: [AuthenticationService]
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService]
 })
-export class AuthenticationModule {}
+export class AuthModule {}

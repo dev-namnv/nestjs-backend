@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { Observable, throwError } from 'rxjs'
-import { Account } from '../../../schemas/account'
-import { AuthenticationService } from '../authentication.service'
+import { User } from '../../../schemas/user'
+import { AuthService } from '../auth.service'
 
 interface JwtPayload {
   accountId?: string
@@ -12,10 +12,7 @@ interface JwtPayload {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    configService: ConfigService,
-    private authenticationService: AuthenticationService
-  ) {
+  constructor(configService: ConfigService, private authenticationService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -23,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: JwtPayload): Promise<Account | Observable<never>> {
+  async validate(payload: JwtPayload): Promise<User | Observable<never>> {
     if (payload.accountId) {
       return this.authenticationService.find(payload.accountId)
     }

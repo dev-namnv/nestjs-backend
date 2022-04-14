@@ -2,10 +2,10 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { Observable, throwError } from 'rxjs'
-import { Model } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
-import { InjectModel } from '@nestjs/mongoose'
-import { Account } from '../../schemas/account'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { User } from '../../schemas/user'
 
 export interface JwtPayload {
   accountId?: string
@@ -13,10 +13,7 @@ export interface JwtPayload {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    configService: ConfigService,
-    @InjectModel(Account.name) private accountModel: Model<Account>
-  ) {
+  constructor(configService: ConfigService, @InjectRepository(User) private accountRepository: Repository<User>) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -24,9 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: JwtPayload): Promise<Account | Observable<never>> {
+  async validate(payload: JwtPayload): Promise<User | Observable<never>> {
     if (payload.accountId) {
-      const account = await this.accountModel.findById(payload.accountId)
+      const account = await this.accountRepository.findOne(payload.accountId)
       if (account) return account
     }
     return throwError(new ForbiddenException('Unauthenticated'))
